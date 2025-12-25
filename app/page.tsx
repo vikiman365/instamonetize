@@ -159,10 +159,10 @@ export default function HomePage() {
           
           <AnimatedSection animation="fadeInUp" delay={0.6}>
             <HeroButtons>
-              <Button as="a" href="/apply" variant="gradient" size="lg">
+              <Button  href="/apply" variant="gradient" size="lg">
                 Apply Now
               </Button>
-              <Button as="a" href="/dashboard" variant="outline" size="lg" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+              <Button href="/dashboard" variant="outline" size="lg" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
                 Creator Dashboard
               </Button>
             </HeroButtons>
@@ -300,7 +300,7 @@ export default function HomePage() {
           
           <AnimatedSection animation="fadeInUp" delay={0.4}>
             <Button 
-              as="a" 
+              
               href="/apply" 
               variant="gradient" 
               size="lg"

@@ -9,12 +9,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'gradient';
   size?: 'sm' | 'md' | 'lg';
   fullwidth?: boolean;
-  fullWidth?: boolean; // Add the capitalized version for compatibility
+  fullWidth?: boolean; // Support both camelCase and lowercase
   href?: string;
   target?: string;
   rel?: string;
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
 }
@@ -203,7 +203,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'primary', 
   size = 'md',
   fullwidth = false,
-  fullWidth = false, // Destructure the capitalized version
+  fullWidth = false, // Support both cases
   href,
   target,
   rel,
@@ -212,7 +212,7 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props 
 }) => {
-  // Use either fullWidth (capital) or fullwidth (lowercase), defaulting to false
+  // Use fullWidth (capital) if provided, otherwise fallback to fullwidth (lowercase)
   const isFullWidth = fullWidth || fullwidth;
   
   const styleProps = {
@@ -231,6 +231,7 @@ const Button: React.FC<ButtonProps> = ({
           display: 'inline-block',
           width: isFullWidth ? '100%' : 'auto'
         }}
+        passHref
       >
         <ButtonStyle 
           {...styleProps} 
@@ -238,6 +239,7 @@ const Button: React.FC<ButtonProps> = ({
           onClick={onClick}
           disabled={disabled}
           type={type}
+          {...props}
         >
           {children}
         </ButtonStyle>
@@ -247,13 +249,17 @@ const Button: React.FC<ButtonProps> = ({
 
   // Handle external links
   if (href && href.startsWith('http')) {
+    // Filter out button-specific props that aren't valid for anchor elements
+    const { type: _, disabled: __, form, formAction, formEncType, formMethod, formNoValidate, formTarget, ...anchorProps } = props as any;
+    
     return (
       <LinkStyle
         {...styleProps}
         href={href}
-        target={target}
-        rel={rel}
+        target={target || '_blank'}
+        rel={rel || 'noopener noreferrer'}
         onClick={onClick}
+        {...anchorProps}
       >
         {children}
       </LinkStyle>
@@ -267,10 +273,11 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       type={type}
+      {...props}
     >
       {children}
     </ButtonStyle>
   );
 };
 
-export default Button;
+export default Button;  
