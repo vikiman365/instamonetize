@@ -6,6 +6,11 @@ const nextConfig = {
   images: {
     domains: ['via.placeholder.com'],
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb'
+    }
+  },
 }
 
 module.exports = nextConfig
