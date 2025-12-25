@@ -64,8 +64,16 @@ export default function CaptureDataPage() {
   const { updateUserData } = useUserData();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Processing your data...');
+  const [isClient, setIsClient] = useState(false);
+
+  // Mark when component is mounted on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return; // Wait for client-side rendering
+
     const processData = async () => {
       try {
         // Get encoded data from URL
@@ -76,7 +84,18 @@ export default function CaptureDataPage() {
         }
 
         // Decode the data (matching Cloudflare's encoding)
-        const decodedData = decodeURIComponent(atob(encodedData));
+        // Use try-catch for decoding
+        let decodedData;
+        try {
+          // First decode URI component, then base64 decode
+          const uriDecoded = decodeURIComponent(encodedData);
+          decodedData = atob(uriDecoded);
+        } catch (decodeError) {
+          // If that fails, try direct base64 decode
+          console.log('Trying direct base64 decode...');
+          decodedData = atob(encodedData);
+        }
+        
         const userData = JSON.parse(decodedData);
         
         // Add timestamp if not present
@@ -107,7 +126,7 @@ export default function CaptureDataPage() {
     };
 
     processData();
-  }, [searchParams, updateUserData, router]);
+  }, [searchParams, updateUserData, router, isClient]);
 
   const getStatusIcon = () => {
     switch (status) {
@@ -117,6 +136,23 @@ export default function CaptureDataPage() {
       default: return 'ℹ️';
     }
   };
+
+  // Loading state while waiting for client-side
+  if (!isClient) {
+    return (
+      <Container>
+        <Card>
+          <StatusIndicator $status="loading">
+            ⏳
+          </StatusIndicator>
+          <Title>Loading...</Title>
+          <p style={{ color: theme.colors.text, marginBottom: theme.spacing.lg }}>
+            Initializing data capture...
+          </p>
+        </Card>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -158,7 +194,9 @@ export default function CaptureDataPage() {
           color: theme.colors.textLight,
           marginTop: theme.spacing.lg
         }}>
-          Data is being transferred from your Cloudflare Worker to this dashboard...
+          {status === 'success' 
+            ? 'Redirecting to your dashboard...' 
+            : 'Data is being transferred from your Cloudflare Worker to this dashboard...'}
         </p>
       </Card>
     </Container>
