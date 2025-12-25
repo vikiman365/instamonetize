@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 import { useUserData } from '@/contexts/UserDataContext';
 import { theme } from '@/styles/theme';
-
+  export const dynamic = 'force-dynamic';
 const Container = styled.div`
   min-height: 100vh;
   display: flex;
