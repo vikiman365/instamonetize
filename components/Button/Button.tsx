@@ -5,10 +5,11 @@ import styled from 'styled-components';
 import Link from 'next/link';
 import { theme } from '../../styles/theme';
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'gradient';
   size?: 'sm' | 'md' | 'lg';
   fullwidth?: boolean;
+  fullWidth?: boolean; // Add the capitalized version for compatibility
   href?: string;
   target?: string;
   rel?: string;
@@ -57,7 +58,7 @@ const ButtonStyle = styled.button<{
           background: ${theme.colors.primary};
           color: white;
           
-          &:hover {
+          &:hover:not(:disabled) {
             background: ${theme.colors.secondary};
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(224, 48, 108, 0.3);
@@ -68,7 +69,7 @@ const ButtonStyle = styled.button<{
           background: ${theme.colors.secondary};
           color: white;
           
-          &:hover {
+          &:hover:not(:disabled) {
             background: ${theme.colors.primary};
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(64, 93, 230, 0.3);
@@ -80,7 +81,7 @@ const ButtonStyle = styled.button<{
           color: ${theme.colors.primary};
           border-color: ${theme.colors.primary};
           
-          &:hover {
+          &:hover:not(:disabled) {
             background: ${theme.colors.primary};
             color: white;
             transform: translateY(-2px);
@@ -91,7 +92,7 @@ const ButtonStyle = styled.button<{
           background: ${theme.colors.gradient.secondary};
           color: white;
           
-          &:hover {
+          &:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(131, 58, 180, 0.4);
           }
@@ -195,11 +196,6 @@ const LinkStyle = styled.a<{
         `;
     }
   }}
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 `;
 
 const Button: React.FC<ButtonProps> = ({ 
@@ -207,6 +203,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'primary', 
   size = 'md',
   fullwidth = false,
+  fullWidth = false, // Destructure the capitalized version
   href,
   target,
   rel,
@@ -215,10 +212,13 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props 
 }) => {
+  // Use either fullWidth (capital) or fullwidth (lowercase), defaulting to false
+  const isFullWidth = fullWidth || fullwidth;
+  
   const styleProps = {
     $variant: variant,
     $size: size,
-    $fullwidth: fullwidth
+    $fullwidth: isFullWidth
   };
 
   // Handle Next.js Link (internal navigation)
@@ -229,7 +229,7 @@ const Button: React.FC<ButtonProps> = ({
         style={{ 
           textDecoration: 'none', 
           display: 'inline-block',
-          width: fullwidth ? '100%' : 'auto'
+          width: isFullWidth ? '100%' : 'auto'
         }}
       >
         <ButtonStyle 
