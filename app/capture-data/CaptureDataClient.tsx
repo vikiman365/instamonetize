@@ -5,14 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useUserData } from '@/contexts/UserDataContext';
 import styled from 'styled-components';
 import { theme } from '@/styles/theme';
+import { ProcessedData } from './actions';
 
 interface CaptureDataClientProps {
   encodedData?: string | null;
-  serverProcessedData: {
-    success: boolean;
-    message: string;
-    userData: any;
-  } | null;
+  serverProcessedData: ProcessedData | null;
 }
 
 const Container = styled.div`
@@ -92,7 +89,7 @@ export default function CaptureDataClient({
         }
 
         // Option 1: Use server-processed data if available
-        if (serverProcessedData && serverProcessedData.success) {
+        if (serverProcessedData && serverProcessedData.success && serverProcessedData.userData) {
           console.log('✅ Using server-processed data');
           updateUserData(serverProcessedData.userData);
           setStatus('success');

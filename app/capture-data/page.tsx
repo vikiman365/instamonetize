@@ -1,19 +1,18 @@
 import { Suspense } from 'react';
-import { decodeAndProcessData } from './actions';
+import { decodeAndProcessData, ProcessedData } from './actions';
 import CaptureDataClient from './CaptureDataClient';
 
+interface PageProps {
+  searchParams: Promise<{ data?: string }>;
+}
+
 // This runs on the server at build time
-export default async function CaptureDataPage({
-  searchParams
-}: {
-  searchParams: Promise<{ data?: string }>
-}) {
-  // IMPORTANT: Don't use useSearchParams() here - use the searchParams prop
+export default async function CaptureDataPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const encodedData = params.data;
   
   // Process data server-side if it exists
-  let processedData = null;
+  let processedData: ProcessedData | null = null;
   if (encodedData) {
     processedData = await decodeAndProcessData(encodedData);
   }
